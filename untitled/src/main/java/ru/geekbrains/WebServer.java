@@ -13,27 +13,31 @@ public class WebServer {
     public static void main(String[] args) {
         System.out.println("Hello world!");
         try (ServerSocket serverSocket = new ServerSocket(8088)) {
-            Socket socket = serverSocket.accept();
-            System.out.println("New client connected");
 
-            BufferedReader input = new BufferedReader(
-                    new InputStreamReader(
-                            socket.getInputStream(), StandardCharsets.UTF_8));
+            while(true) {
+                Socket socket = serverSocket.accept();
+                System.out.println("New client connected");
+                BufferedReader input = new BufferedReader(
+                        new InputStreamReader(
+                                socket.getInputStream(), StandardCharsets.UTF_8));
 
-            PrintWriter output = new PrintWriter(socket.getOutputStream());
+                PrintWriter output = new PrintWriter(socket.getOutputStream());
 
-            while (!input.ready());
+                while (!input.ready()) ;
 
-            while (input.ready())
-            {
-                System.out.println(input.readLine());
+                while (input.ready()) {
+                    System.out.println(input.readLine());
+                }
+
+                output.println("HTTP/1.1 200 OK");
+                output.println("Content-Type: Text/html; charset=utf-8");
+                output.println();
+                output.println("<h1>Hi from server!</h1>");
+                output.flush();
+
+                input.close();
+                output.close();
             }
-
-            output.println("HTTP/1.1 200 OK");
-            output.println("Content-Type: Text/html; charset=utf-8");
-            output.println();
-            output.println("<h1>Hi from server!</h1>");
-            output.flush();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
